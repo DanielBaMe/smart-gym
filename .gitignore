@@ -1,0 +1,4 @@
+/node_modules
+/public/js/app.js
+mix-manifest.json
+package-lock.json
