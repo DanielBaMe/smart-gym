@@ -5,63 +5,54 @@
         <div class="page-container">
             <HeaderDesktop/>
             <div class="main-content">
-                <div v-show="agregar">
-                    <div class="row align-items-start">
-                        <div class="col"></div>
-                        <div class="col"></div>
-                            <div class="col-lg-6">
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h4>Datos del nuevo servicio</h4></div>
-                                        <div class="card-body card-block">
-                                            <form method="post" @submit.prevent="addService" class="ml-5 mr-5">
-                                                <div class="form-group">
-                                                    <error-list :errors="errors.nombre"></error-list>
-                                                    <div class="input-group">
-                                                        <label class="control-label mb-1">Nombre</label>
-                                                        <input type="text" name="servicio" id="servicio"
-                                                        class="form-control" v-model="nombre"  pattern="[a-zA-ZñÑáéíóúÁÉÍÓÚ0-9\s]+"
-                                                        title="Solo números y letras.">
-                                                    </div>
-                                                </div>
-                                                <div class="form-group">
-                                                    <error-list :errors="errors.precio"></error-list>
-                                                    <div class="input-group">
-                                                        <label class="control-label mb-1">Precio</label>
-                                                        <input type="number" step="0.50" name="precio" id="precio" placeholder="$1.50"
-                                                        class="form-control" min="0" v-model="precio">
-                                                    </div>
-                                                </div>
-                                                <div class="form-group">
-                                                    <error-list :errors="errors.descripcion"></error-list>
-                                                    <div class="input-group">
-                                                        <label class="control-label mb-1">Descripcion</label>
-                                                        <textarea type="text" max="50" name="descripcion" id="descripcion" 
-                                                        class="form-control" v-model="descripcion" rows="5"  pattern="[a-zA-ZñÑáéíóúÁÉÍÓÚ0-9\s]+"></textarea>
-                                                    </div>
-                                                </div>
-                                                <br/>
-                                                <div class="row">
-                                                    <div class="col-auto mr-auto">
-                                                        <button class="btn btn-success btn-md" v-if="!cargando" type="submit">Agregar</button>
-                                                        <button v-else disabled class="btn btn-info btn-md">
-                                                            <i class="fas fa-circle-notch fa-spin"></i>
-                                                            Agregando...
-                                                        </button>
-                                                    </div>
-                                                    <div class="col-auto">
-                                                        <span v-show="agregar" title="Cancelar" @click="agregar = !agregar" @click.prevent="limpiarDatos()" class="btn btn-danger btn-md content-aling-center">X</span>
-                                                    </div>
-                                                </div>
-                                                <br/>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            <div class="col"></div>
-                        <div class="col"></div>
+                <div class="modal fade" id="agregarServiceModal" tabindex="-1" role="dialog" aria-labelledby="mediumModalLabel" aria-hidden="true">
+                  <form @submit.prevent="addService" class="ml-5 mr-5">
+                    <div class="modal-dialog modal-lg" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="mediumModalLabel">Agregar un servicio</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                        <div class="modal-body">
+                          <div class="form-group">
+                              <error-list :errors="errors.nombre"></error-list>
+                              <div class="input-group">
+                                  <label class="control-label mb-1">Nombre</label>
+                                  <input type="text" name="servicio" id="servicio"
+                                  class="form-control" v-model="servicio.nombre"  pattern="[a-zA-ZñÑáéíóúÁÉÍÓÚ0-9\s]+"
+                                  title="Solo números y letras.">
+                              </div>
+                          </div>
+                          <div class="form-group">
+                              <error-list :errors="errors.precio"></error-list>
+                              <div class="input-group">
+                                  <label class="control-label mb-1">Precio</label>
+                                  <input type="number" step="0.50" name="precio" id="precio" placeholder="$1.50"
+                                  class="form-control" min="0" v-model="servicio.precio">
+                              </div>
+                          </div>
+                          <div class="form-group">
+                              <error-list :errors="errors.descripcion"></error-list>
+                              <div class="input-group">
+                                  <label class="control-label mb-1">Descripcion</label>
+                                  <textarea type="text" max="50" name="descripcion" id="descripcion"
+                                  class="form-control" v-model="servicio.descripcion" rows="5"  pattern="[a-zA-ZñÑáéíóúÁÉÍÓÚ0-9\s]+"></textarea>
+                              </div>
+                          </div>
+                        </div>
+                        <br/>
+                        <div class="modal-footer">
+                          <button v-if="!agregandoServicio" type="button" class="btn btn-danger" data-dismiss="modal" @click.prevent="limpiarServicio">Cancelar</button>
+                          <button v-if="!agregandoServicio" type="submit" class="btn btn-primary">Agregar</button>
+                          <button v-if="agregandoServicio" disabled class="btn btn-primary">Agregando...</button>
+                        </div>
+                      </div>
                     </div>
+                  </form>
                 </div>
+
                 <div class="col-md-12 m-3">
                     <div class="table-data__tool">
                         <div class="table-data__tool-left">
@@ -69,7 +60,7 @@
                             </button>
                         </div>
                         <div class="table-data__tool-right">
-                            <button class="btn btn-info btn-sm content-aling-center" @click="agregar = !agregar" v-if="agregar === false">
+                            <button class="btn btn-info btn-sm content-aling-center" data-toggle="modal" data-target="#agregarServiceModal">
                                 +   Nuevo servicio
                             </button>
                         </div>
@@ -77,7 +68,7 @@
                     <div v-if="vacio">
                         <div class="row">
                             <div class="col"></div>
-                            <div class="col"> 
+                            <div class="col">
                                 <div class="alert alert-info" role="alert">
                                     <h1 class="text-center">No existen registros</h1>
                                     <h3 class="text-center">Ingresa algunos</h3>
@@ -98,7 +89,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr class="tr-shadow" v-for="(item,index) of datos" :key="item.id">
+                                    <tr class="tr-shadow" v-for="(item,index) of servicios" :key="item.id">
                                         <td>
                                             <span>{{item.nombre}}</span>
                                         </td>
@@ -112,17 +103,17 @@
                                             <div class="table-data-feature justify-content-around">
                                                 <router-link :to="'/ver-servicio/' + item.id">
                                                     <button class="item" data-toggle="tooltip" data-placement="top" title="Ver más">
-                                                        <span class="glyphicon glyphicon-zoom-in"></span> 
+                                                        <span class="glyphicon glyphicon-zoom-in"></span>
                                                     </button>
                                                 </router-link>
 
                                                 <router-link :to="'/edit-servicio/' + item.id">
                                                     <button class="item" data-toggle="tooltip" data-placement="top" title="Editar">
                                                         <span class="zmdi zmdi-edit"></span>
-                                                    </button> 
+                                                    </button>
                                                 </router-link>
-                                                
-                                                <button class="item" data-toggle="tooltip" data-placement="top" title="Eliminar" type="submit" @click.prevent="deleteServicio(index,item.id)">
+
+                                                <button class="item" data-toggle="tooltip" data-placement="top" title="Eliminar" type="submit" @click.prevent="eliminarServicio({index, id: item.id})">
                                                     <span class="zmdi zmdi-delete"></span>
                                                 </button>
                                             </div>
@@ -132,25 +123,10 @@
                                     </tr>
                                 </tbody>
                             </table>
-                            <nav>
-                                <ul class="pagination">
-                                    <li v-if="paginacion.current_page > 1">
-                                        <a href="#" @click.prevent="changePage(paginacion.current_page - 1)">
-                                            <span>Atras</span>
-                                        </a>
-                                    </li>
-                                    <li v-for="page in pageNumber" :key="page.id" :class="[ page == isActived ? 'active' : '']">
-                                        <a href="#" @click.prevent="changePage(page)">
-                                            {{page}}
-                                        </a>
-                                    </li>
-                                    <li v-if="paginacion.current_page < paginacion.last_page">
-                                        <a href="#" @click.prevent="changePage(paginacion.current_page - 1)">
-                                            <span>Siguiente</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </nav>
+                            <NavPagination
+                              v-if="servicios && servicios.length > 0"
+                              :pagination="paginacionServicios"
+                              action="obtenerServicios" />
                         </div>
                     </div>
                     <div v-if="loading" class="row">
@@ -165,7 +141,7 @@
                 </div>
             </div>
         </div>
-    </div>       
+    </div>
 </template>
 
 
@@ -176,8 +152,10 @@ import HeaderDesktop from './HeaderDesktop'
 import ErrorsList from './ErrorsList.vue'
 import { mapState, mapActions } from 'vuex';
 import axios from 'axios';
-import SweetAlert from 'sweetalert2'
-// import func from '../../vue-temp/vue-editor-bridge';
+
+import NavPagination from './nav-pagination'
+
+import Service from '../models/Services'
 
 export default {
     name: 'Servicios',
@@ -185,64 +163,31 @@ export default {
         HeaderMobile,
         MenuSidebar,
         HeaderDesktop,
-        'error-list': ErrorsList
+        'error-list': ErrorsList,
+        NavPagination
     },
     data(){
         return{
-            nombre:'',
-            precio:'',
-            descripcion:'',
-            datos: [],
-            errors: [],
             ide: '',
-            agregar: false,
-            btnagregar: false,
-            cargando: false,
             er: false,
             loading : false,
             vacio : false,
-            paginacion : {
-                'total': 0,
-                'current_page': 0,
-                'per_page': 0,
-                'last_page': 0,
-                'from': 0,
-                'to': 0
-            },
         };
     },
     created(){
         this.verifyToken();
     },
     mounted(){
-        this.obtenerDatos();
+        this.obtenerServicios(1);
     },
     computed :{
-        isActived : function (){
-            return this.paginacion.current_page;
-        },
-        pageNumber: function (){
-            if(!this.paginacion.to){
-                return [];
-            }
-
-            var from = this.paginacion.current_page - 2; //pendiente
-            if(from < 1){
-                from = 1;
-            }
-
-            var to = from + (2 * 2);
-            if(to >= this.paginacion.last_page){
-                to = this.paginacion.last_page;
-            }
-
-            var pagesArray = [];
-            while(from <= to){
-                pagesArray.push(from);
-                from++;
-            }
-            return pagesArray;
-        }
+        ...mapState([
+            'servicio',
+            'servicios',
+            'paginacionServicios',
+            'agregandoServicio',
+            'errors'
+        ])
     },
     filters:{
         delimitar(valor){
@@ -253,7 +198,11 @@ export default {
     },
     methods:{
         ...mapActions([
-            'getToken'
+            'getToken',
+            'limpiarServicio',
+            'obtenerServicios',
+            'agregarServicio',
+            'eliminarServicio'
         ]),
         verifyToken(){
             this.getToken()
@@ -266,68 +215,8 @@ export default {
                 console.log(error);
             })
         },
-        obtenerDatos(page){
-            this.loading = true;
-            axios.get('/servicios?page='+page)
-            .then((response) =>
-            {   
-                if(response.data['data'][0] == null){
-                    this.loading = false;
-                    console.log('vacio')
-                    this.vacio = true;
-                }else{
-                    //this.paginacion = response.data.rutinas['pagination']
-                    this.paginacion = response.data.pagination
-                    this.loading =false;
-                    this.vacio =false;
-                    this.datos = response.data['data'];
-                    console.log(response)
-                }
-
-            }).catch(function (error){
-                this.loading = false
-                console.log('Error: ' + error);
-            })
-        },
         addService(){
-            this.cargando = true
-            axios.post('/servicios',
-            {
-                nombre: this.nombre,
-                precio: this.precio,
-                descripcion: this.descripcion,
-                id_gimnasio: this.ide
-            })
-            .then( response => {
-                this.cargando = false
-                let servicio = {
-                    nombre: this.nombre,
-                    precio: this.precio,
-                    descripcion: this.descripcion,
-                    id_gimnasio: this.ide
-                }
-                this.datos.unshift(servicio)
-                this.cargando = false;
-                this.errors = [];
-                this.agregar = false;
-                this.nombre = ''
-                this.precio = ''
-                this.descripcion = ''
-                SweetAlert.fire(
-                'Correcto',
-                'Se ha agregado un servicio exitosamente',
-                'success',
-                setTimeout(() => {
-                    location.reload()
-                }, 500)
-            )
-            })
-            .catch(error=>{
-                this.cargando = false
-                this.errors = (error.response.data.errors)
-                this.cargando = false;
-            })
-            this.errors= []
+            this.agregarServicio(this.servicio)
         },
         deleteServicio(index,id){
             Swal.fire({
@@ -354,15 +243,6 @@ export default {
             }
             })
         },
-        limpiarDatos(){
-            this.nombre = ''
-            this.precio = ''
-            this.descripcion = ''
-        },
-        changePage(page){
-            this.paginacion.current_page = page;
-            this.obtenerDatos(page);
-        }
     }
 }
 
