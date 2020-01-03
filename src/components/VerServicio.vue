@@ -15,7 +15,7 @@
                             <div class="col-lg-6">
                                 <div class="card">
                                     <div class="card-header">
-                                        <h3>{{servicio.nombre}}</h3></div>
+                                        <h3>{{servicioUnico.nombre}}</h3></div>
                                         <div class="card-body">
                                             <form @submit.prevent="formSubmit" method="post" class="ml-5 mr-5">
                                                     <div v-if="er" class="alert alert-danger w-100">
@@ -24,30 +24,45 @@
                                                     </div>
                                                     <div class="form-group">
                                                         <error-list :errors="errors.nombre"></error-list>
-                                                        <label class="control-label mb-1">Nombre</label> 
+                                                        <label class="control-label mb-1">Nombre</label>
                                                         <input name='nombre' id='nombre' class="form-control" type="text"
                                                         pattern="[a-zA-ZñÑáéíóúÁÉÍÓÚ0-9\s]+" title="Solo números y letras."
-                                                        v-model="servicio.nombre" minlength="4" maxlength="20"  :disabled="validated">
-                                                        <br/>  
+                                                        v-model="servicioUnico.nombre" minlength="4" maxlength="20"  :disabled="validated">
+                                                        <br/>
                                                     </div>
                                                     <div class="form-group">
                                                         <error-list :errors="errors.precio"></error-list>
-                                                        <label class="control-label mb-1">Precio</label>  
+                                                        <label class="control-label mb-1">Precio</label>
                                                         <input name='precio' id='precio' class="form-control" type="number" step="0.50"
-                                                        v-model="servicio.precio"  :disabled="validated"> 
+                                                        v-model="servicioUnico.precio"  :disabled="validated">
                                                         <br/>
                                                     </div>
                                                     <div class="form-group">
                                                         <error-list :errors="errors.descripcion"></error-list>
-                                                        <label class="control-label mb-1">Descripcion</label>    
-                                                        <textarea v-model="servicio.descripcion" type="text" name='descripcion'
+                                                        <label class="control-label mb-1">Descripcion</label>
+                                                        <textarea v-model="servicioUnico.descripcion" type="text" name='descripcion'
                                                         id='descripcion' class="form-control"
                                                         rows="5" cols="50" pattern="[a-zA-ZñÑáéíóúÁÉÍÓÚ0-9\s]+"  :disabled="validated"></textarea>
                                                         <br/>
                                                     </div>
                                                 <br/>
                                                     <span v-if="validated" @click="validated = !validated" class="btn btn-success m-b-20 w-100">Habilitar edición</span>
-                                                    <button v-else type="submit" class="btn btn-primary m-b-20 w-100">Editar</button>
+                                                    <div v-else>
+                                                      <button
+                                                        v-if="!agregandoServicio"
+                                                        type="submit"
+                                                        class="btn btn-primary w-100"
+                                                      >
+                                                        Editar
+                                                      </button>
+                                                      <button
+                                                        v-if="agregandoServicio"
+                                                        disabled
+                                                        class="btn btn-primary w-100"
+                                                      >
+                                                        Editando...
+                                                      </button>
+                                                    </div>
                                                     <br/>
                                                     <br/>
                                             </form>
@@ -81,15 +96,6 @@ name: 'Servicios',
     },
     data(){
         return{
-            servicio:{
-                nombre: '',
-                precio: '',
-                descripcion: '',
-                id: '',
-                id_gimnasio: '',
-                updated_at: ''
-            },
-            errors: [],
             er: false,
             hecho: false,
             er: false,
@@ -101,46 +107,29 @@ name: 'Servicios',
     },
     created(){
         this.verifyToken();
-        this.obtenerDatos();
+    },
+    mounted(){
+      this.obtenerServicio();
+    },
+    computed: {
+      ...mapState(["servicioUnico", "agregandoServicio", "errors"])
     },
     methods:{
         ...mapActions([
-            'getToken'
+            'getToken',
+            'obtenerServicioUnico',
+            'editarServicio'
         ]),
         verifyToken(){
             this.getToken()
         },
-        obtenerDatos(){
-            this.ide = this.$route.params.id;
-            axios.get('/servicios/' + this.ide)
-            .then((response) =>
-            {  
-                this.servicio = response.data;
-            }).catch(function (error){
-                this.er = true
-            })
+        obtenerServicio() {
+          this.ide = this.$route.params.id;
+          this.obtenerServicioUnico(this.ide);
         },
         formSubmit(){
-            axios.put('/servicios/'+ this.ide, this.servicio)
-            .then(response => {
-                this.errors= []
-                this.loading = false;
-                Swal.fire({ 
-                    title: 'Se ha editado el servicio exitosamente',
-                    icon: 'success',
-                    timer: 2000,
-                    onClose: () => {
-                        this.$router.push('/servicios');
-                    }
-                })           
-            }).catch(error => {
-                console.log(error)
-                this.errors = (error.response.data.errors)
-                this.loading = false;
-            })
-            this.errors=[];
-            this.loading = false;
-            }
+            this.editarServicio({id: this.ide, servicio: this.servicioUnico})
+        }
     }
 
 }

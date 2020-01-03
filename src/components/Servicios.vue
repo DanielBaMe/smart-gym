@@ -217,32 +217,7 @@ export default {
         },
         addService(){
             this.agregarServicio(this.servicio)
-        },
-        deleteServicio(index,id){
-            Swal.fire({
-            title: '¿Desea eliminar este servicio?',
-            text: "Este servicio también se eliminará de los planes de entrenamiento en donde esté vinculado.",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Eliminar'
-            }).then((result) => {
-            if (result.value) {
-                axios.delete('/servicios/'+ id)
-                .then(response => {
-                    this.datos.splice(index, 1)
-                    Swal.fire(
-                    '¡Eliminado!',
-                    'El servicio ha sido eliminado.',
-                    'success'
-                    )
-                }).catch(error => {
-                    alert('Ha ocurrido un error: ' + error)
-                })
-            }
-            })
-        },
+        }
     }
 }
 

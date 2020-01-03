@@ -20,20 +20,25 @@ export default new Vuex.Store({
     loginError: null,
     ideGym: null,
     perfil: null,
+    errors: [],
+
     // Gimnasio
     gimnasio: new Gimnasio(),
+
     // Coaches
     coach: new Coach(),
-    servicio: new Service(),
     coaches: [],
-    servicios: [],
     obteniendoCoaches: false,
-    obteniendoServicios: false,
     agregandoCoach: false,
-    agregandoServicios: false,
     paginacionCoaches: new Pagination(),
-    paginacionServicios: new Pagination(),
-    errors: []
+
+    // Servicios
+    servicio: new Service(),
+    servicioUnico: new Service(),
+    servicios: [],
+    obteniendoServicios: false,
+    agregandoServicio: false,
+    paginacionServicios: new Pagination()
   },
   data(){
       _this = this
@@ -61,6 +66,9 @@ export default new Vuex.Store({
     },
     mutarServicios: (state, datos) => {
       state.servicios = datos
+    },
+    mutarServicioUnico: (state, datos) => {
+      state.servicioUnico = datos
     },
     mutarObteniendoCoaches: (state, datos) => {
       state.obteniendoCoaches = datos
@@ -368,6 +376,14 @@ export default new Vuex.Store({
       })
 
     },
+    obtenerServicioUnico({commit}, id) {
+      axios.get('/servicios/' + id)
+        .then(response => {
+          commit('mutarServicioUnico', response.data)
+        }).catch(error => {
+          console.log(error)
+        })
+    },
     eliminarServicio({commit}, { index, id }) {
 
       Swal.fire({
@@ -407,6 +423,26 @@ export default new Vuex.Store({
     },
     limpiarServicio: ({commit}) => {
       commit('limpiarServicio')
+    },
+    editarServicio({commit}, {id, servicio}){
+      commit('mutarAgregandoServicios', true)
+      axios.put('/servicios/'+ id, servicio)
+      .then(response => {
+        commit('mutarAgregandoServicios', false)
+        commit('actualizarErrores', [])
+        commit('limpiarServicio')
+
+        Swal.fire({
+          icon: 'success',
+          title: '¡ÉXITO!',
+          text: 'Se ha editado el servicio'
+        })
+        router.push('/servicios');
+      }).catch(error => {
+          commit('mutarAgregandoServicios', false)
+          commit('actualizarErrores', error.response.data.errors)
+          console.log(response)
+      })
     }
   },
   modules: {
