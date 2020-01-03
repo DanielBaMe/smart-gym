@@ -121,15 +121,15 @@
                         <div class="account-wrap">
                             <div class="account-item clearfix js-item-menu">
                                 <div class="content">
-                                    <a class="js-acc-btn" href="#">{{datos.nombre}}</a>
+                                    <a class="js-acc-btn" href="#">{{ gimnasio.nombre }}</a>
                                 </div>
                                 <div class="account-dropdown js-dropdown">
                                     <div class="info clearfix">
                                         <div class="content">
                                             <h5 class="name">
-                                                <a href="#">{{datos.nombre}}</a>
+                                                <a href="#">{{ gimnasio.nombre }}</a>
                                             </h5>
-                                            <span class="email">{{datos.email}}</span>
+                                            <span class="email">{{ gimnasio.email }}</span>
                                         </div>
                                     </div>
                                     <div class="account-dropdown__body">
@@ -160,33 +160,20 @@
     </header>
 </template>
 <script>
+
 import { mapState, mapActions } from 'vuex';
-import store from '../store'
+
 export default {
 
-    name: 'HeaderDesktop',
-    data(){
-        return {
-            datos: []
-        }
-    },
-    mounted(){
-        this.obtenerDatos();
-    },
-    methods:{
-        ...mapActions([
-            'getId',
-            'getPerfil'
-        ]),
-        obtenerId(){
-            this.getId()
-        },
-        obtenerDatos(){
-            setTimeout(() => {
-                store.dispatch('getPerfil')
-                this.datos = store.state.perfil
-            }, 100)
-        }
-    }
+  name: 'HeaderDesktop',
+  computed: {
+    ...mapState(['gimnasio'])
+  },
+  mounted(){
+    this.obtenerInfoGimnasio()
+  },
+  methods:{
+    ...mapActions(['obtenerInfoGimnasio'])
+  }
 }
 </script>

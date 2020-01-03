@@ -73,15 +73,14 @@
 import HeaderMobile from './HeaderMobile'
 import MenuSidebar from './MenuSidebar'
 import HeaderDesktop from './HeaderDesktop'
-import { mapState, mapActions } from 'vuex';
-import axios from 'axios';
+import { mapState, mapActions } from 'vuex'
 
 export default {
     name: 'Inicio',
     components: {
-        HeaderMobile,
-        MenuSidebar,
-        HeaderDesktop
+      HeaderMobile,
+      MenuSidebar,
+      HeaderDesktop
     },
     data(){
         return {
@@ -104,9 +103,9 @@ export default {
         };
     },
     mounted(){
-        this.verifyToken();
-        this.pagos('grafica', 'servicios', 'planes');
-        this.obtenerDatos();
+      this.verifyToken();
+      this.pagos('grafica', 'servicios', 'planes');
+      this.obtenerDatos();
     },
     methods:{
         ...mapActions([
